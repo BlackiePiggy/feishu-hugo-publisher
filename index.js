@@ -8,6 +8,10 @@ const VERIFY_TOKEN = process.env.FEISHU_VERIFICATION_TOKEN;
 // 健康检查
 app.get("/", (req, res) => res.status(200).send("ok"));
 
+app.get("/webhook/feishu", (req, res) => {
+  res.status(200).json({ ok: true, msg: "webhook endpoint reachable" });
+});
+
 // 飞书事件回调入口
 app.post("/webhook/feishu", (req, res) => {
   const body = req.body || {};
