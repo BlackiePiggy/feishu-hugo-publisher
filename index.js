@@ -16,15 +16,17 @@ app.get("/webhook/feishu", (req, res) => {
 app.post("/webhook/feishu", (req, res) => {
   const body = req.body || {};
 
-  // 1) URL 验证（飞书第一次配置 Request URL 会发 challenge）
-  // 你需要原样返回 { "challenge": "..." }
-  if (body.type === "url_verification" && body.challenge) {
-    // 可选：校验 token
-    if (VERIFY_TOKEN && body.token && body.token !== VERIFY_TOKEN) {
-      return res.status(401).json({ msg: "invalid verification token" });
-    }
+  console.log("Incoming headers:", JSON.stringify(req.headers));
+  console.log("Incoming body:", JSON.stringify(body));
+
+  // 只要带 challenge（URL 验证），直接返回
+  if (body.challenge) {
     return res.json({ challenge: body.challenge });
   }
+
+  // 普通事件先直接 ack
+  return res.status(200).json({ ok: true });
+});
 
   // 2) 普通事件：校验 token（飞书事件 body.header.token）
   if (VERIFY_TOKEN && body?.header?.token && body.header.token !== VERIFY_TOKEN) {
